@@ -202,13 +202,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const active = Math.round(Math.max(0, Math.min(1, rpm)) * 10);
             rpmBoxes.forEach((box, i) => {
                 box.classList.toggle('on', i < active);
-                // Add gear warning when RPM is high (80%+)
-                box.classList.toggle('gear-warning', rpm >= 0.8 && i < active);
+                // Add gear warning when RPM is high (100%+)
+                box.classList.toggle('gear-warning', rpm >= 1.0 && i < active);
             });
 
             // Update gear display warning based on RPM
             if (els.gear) {
-                els.gear.classList.toggle('gear-warning', rpm >= 0.8);
+                els.gear.classList.toggle('gear-warning', rpm >= 1.0);
             }
         };
     } else {
