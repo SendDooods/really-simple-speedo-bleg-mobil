@@ -1,0 +1,594 @@
+/* Import digital font */
+@import url('https://fonts.cdnfonts.com/css/digital');
+
+/* CSS Variables for speed colors (controlled by JavaScript) */
+:root {
+    --speed-color: #ffffff;
+    --speed-glow: rgba(255, 255, 255, 0.8);
+    --fuel-color: #44ff44;
+    --fuel-glow: rgba(68, 255, 68, 0.8);
+    --health-color: #00ff00;
+    --health-glow: rgba(0, 255, 0, 0.8);
+}
+
+/* Global reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+/* Body styling */
+body {
+    background: transparent !important;
+    font-family: 'Digital', 'Courier New', monospace;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* Turn signals container - positioned above gear container (single box) */
+.turn-signals-container {
+    position: absolute;
+    bottom: 50px;
+    right: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    min-width: 60px;
+    min-height: 60px;
+    transform: scale(0.7);
+    z-index: 9999;
+}
+
+/* Individual turn signal indicators inside the container */
+.turn-signal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+    transition: all 0.3s ease;
+}
+
+/* Headlight container in the middle */
+.headlight-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
+/* Headlight images */
+.headlight-container img {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    opacity: 0.3;
+    filter: brightness(0.5);
+    transition: all 0.3s ease;
+}
+
+/* Low beam styling */
+.low-beam.active {
+    opacity: 1;
+    filter: brightness(1) url(#blue-bleed-low);
+}
+
+/* High beam styling */
+.high-beam.active {
+    opacity: 1;
+    filter: brightness(1) url(#blue-bleed-high);
+}
+
+/* Engine on state for headlights */
+.headlight-container.engine-on img {
+    opacity: 0.15;
+    filter: brightness(0.3) grayscale(0.8);
+}
+
+.headlight-container.engine-on .low-beam.active {
+    opacity: 1;
+    filter: brightness(1) url(#blue-bleed-low);
+}
+
+.headlight-container.engine-on .high-beam.active {
+    opacity: 1;
+    filter: brightness(1) url(#blue-bleed-high);
+}
+
+/* Turn signal when engine is on (greyed out) */
+.turn-signal.engine-on {
+    opacity: 0.15;
+}
+
+.turn-signal.engine-on img {
+    filter: brightness(0.3) grayscale(0.8);
+}
+
+/* Turn signal images */
+.turn-signal img {
+    width: 30px;
+    height: 30px;
+    filter: brightness(0.5);
+    transition: filter 0.3s ease;
+}
+
+/* Active turn signal styling */
+.turn-signal.active {
+    opacity: 1;
+}
+
+.turn-signal.active img {
+    filter: brightness(1) url(#green-bleed);
+}
+
+/* Blinking animation for turn signals */
+.turn-signal.is-blinking,
+.turn-signal.engine-on.is-blinking {
+    animation: turn-signal-blink 0.5s infinite;
+}
+
+@keyframes turn-signal-blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0.6;
+    }
+}
+
+.turn-signal.is-blinking img,
+.turn-signal.engine-on.is-blinking img {
+    filter: brightness(1) url(#green-bleed);
+}
+
+/* RPM container - positioned at bottom right (above speed) */
+.rpm-container {
+    position: absolute;
+    bottom: 110px;
+    right: 20px;
+    display: flex;
+    gap: 3px;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    transform: scale(0.8);
+    transform-origin: bottom right;
+}
+
+/* Individual RPM box */
+.rpm-box {
+    width: 16px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+/* Active RPM boxes - White when on */
+.rpm-box.on {
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    border-color: #ffffff;
+}
+
+/* Flashing red RPM boxes for gear change warning */
+.rpm-box.gear-warning {
+    animation: rpm-gear-warning 0.3s infinite;
+}
+
+@keyframes rpm-gear-warning {
+
+    0%,
+    50% {
+        background: #ff0000;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 1);
+        border-color: #ff0000;
+    }
+
+    51%,
+    100% {
+        background: #800000;
+        box-shadow: 0 0 5px rgba(128, 0, 0, 0.5);
+        border-color: #800000;
+    }
+}
+
+/* Fuel container - positioned at bottom right (left of gear) */
+.fuel-container {
+    position: absolute;
+    bottom: 20px;
+    right: 260px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    min-width: 70px;
+    min-height: 60px;
+    transform: scale(0.8);
+    transform-origin: bottom right;
+}
+
+/* Fuel display text */
+.fuel-display {
+    font-size: 18px;
+    color: var(--fuel-color, #44ff44);
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--fuel-glow, rgba(68, 255, 68, 0.8));
+    text-align: center;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Fuel label */
+.fuel-label {
+    font-size: 16px;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+/* Fuel blinking animation for low fuel (under 10%) */
+.fuel-display.fuel-blink {
+    animation: fuel-blink 0.5s infinite;
+}
+
+@keyframes fuel-blink {
+
+    0%,
+    50% {
+        color: #ff0000;
+        text-shadow: 0 0 15px rgba(255, 0, 0, 1);
+    }
+
+    51%,
+    100% {
+        color: #800000;
+        text-shadow: 0 0 5px rgba(128, 0, 0, 0.5);
+    }
+}
+
+/* Health container - positioned underneath fuel */
+.health-container {
+    position: absolute;
+    bottom: 80px;
+    right: 260px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    min-width: 70px;
+    min-height: 60px;
+    transform: scale(0.8);
+    transform-origin: bottom right;
+}
+
+/* Health display text */
+.health-display {
+    font-size: 18px;
+    color: var(--health-color, #00ff00);
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--health-glow, rgba(0, 255, 0, 0.8));
+    text-align: center;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Health label */
+.health-label {
+    font-size: 16px;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+/* Health blinking animation for low health (under 10%) */
+.health-display.health-blink {
+    animation: health-blink 0.5s infinite;
+}
+
+@keyframes health-blink {
+
+    0%,
+    50% {
+        color: #ff0000;
+        text-shadow: 0 0 15px rgba(255, 0, 0, 1);
+    }
+
+    51%,
+    100% {
+        color: #800000;
+        text-shadow: 0 0 5px rgba(128, 0, 0, 0.5);
+    }
+}
+
+/* Fuel unit label */
+.fuel-unit {
+    font-size: 16px;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    margin-top: 2px;
+}
+
+/* Seatbelt container - positioned above gear container */
+.seatbelt-container {
+    position: absolute;
+    /* Customizable positioning - edit these values */
+    bottom: 90px;
+    right: 200px;
+    /* Customizable size - edit these values */
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.8);
+    transform-origin: bottom right;
+    z-index: 1000;
+}
+
+/* Hide seatbelt completely for motorcycles */
+.seatbelt-container.motorcycle {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.seatbelt-container.motorcycle .seatbelt-indicator {
+    opacity: 0;
+}
+
+/* Seatbelt indicator image */
+.seatbelt-indicator {
+    /* Customizable image size - edit these values */
+    width: 40px;
+    height: 40px;
+    opacity: 0.3;
+    filter: brightness(0.5);
+    transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Seatbelt when engine is on (greyed out) */
+.seatbelt-container.engine-on .seatbelt-indicator {
+    opacity: 0.15;
+    filter: brightness(0.3) grayscale(0.8);
+}
+
+/* Seatbelt active (buckled) - green */
+.seatbelt-indicator.active,
+.seatbelt-container.engine-on .seatbelt-indicator.active {
+    opacity: 1;
+    filter: brightness(1) url(#green-bleed-seatbelt);
+}
+
+/* Seatbelt warning (not buckled) - flashing red */
+.seatbelt-indicator.warning,
+.seatbelt-container.engine-on .seatbelt-indicator.warning {
+    opacity: 1;
+    animation: seatbelt-warning 0.5s infinite;
+    transition: none;
+}
+
+@keyframes seatbelt-warning {
+
+    0%,
+    50% {
+        filter: brightness(1) url(#red-bleed);
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        filter: brightness(0.8) url(#red-bleed);
+        opacity: 0.7;
+    }
+}
+
+/* Gear container - positioned at bottom right (left of speed) */
+.gear-container {
+    position: absolute;
+    bottom: 20px;
+    right: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    min-width: 60px;
+    min-height: 60px;
+    transform: scale(0.8);
+    transform-origin: bottom right;
+}
+
+/* Gear display text */
+.gear-display {
+    font-size: 32px;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+/* Reverse gear styling */
+.gear-display.gear-reverse {
+    color: #ffffff;
+    text-shadow: 0 0 10px #ffffff;
+}
+
+/* Gear change warning - flashing red */
+.gear-display.gear-warning {
+    animation: gear-warning 0.3s infinite;
+}
+
+@keyframes gear-warning {
+
+    0%,
+    50% {
+        color: #ff0000;
+        text-shadow: 0 0 15px rgba(255, 0, 0, 1);
+    }
+
+    51%,
+    100% {
+        color: #800000;
+        text-shadow: 0 0 5px rgba(128, 0, 0, 0.5);
+    }
+}
+
+/* Speed display container - positioned independently at bottom right */
+.speed-container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    transform: scale(0.8);
+    transform-origin: bottom right;
+}
+
+/* Speed number display */
+.speed-display {
+    font-size: 64px;
+    color: var(--speed-color);
+    font-weight: bold;
+    text-shadow: 0 0 20px var(--speed-glow);
+    letter-spacing: -2px;
+    text-align: center;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    min-width: 120px;
+    right: 50px;
+}
+
+/* Speed unit text (MPH/KPH) */
+.speed-unit {
+    font-size: 24px;
+    color: #fff;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    align-self: flex-end;
+    margin-bottom: 8px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .rpm-container {
+        bottom: 100px;
+        right: 10px;
+        transform: scale(0.7);
+    }
+
+    .turn-signals-container {
+        bottom: 70px;
+        right: 150px;
+        min-width: 70px;
+        min-height: 50px;
+        padding: 8px 12px;
+        gap: 8px;
+        transform: scale(0.7);
+    }
+
+    .turn-signal img {
+        width: 16px;
+        height: 16px;
+    }
+
+    .health-container {
+        bottom: 80px;
+        right: 240px;
+        transform: scale(0.7);
+        min-width: 60px;
+        min-height: 50px;
+        padding: 8px 12px;
+    }
+
+    .fuel-container {
+        bottom: 10px;
+        right: 240px;
+        transform: scale(0.7);
+        min-width: 60px;
+        min-height: 50px;
+        padding: 8px 12px;
+    }
+
+    .gear-container {
+        bottom: 10px;
+        right: 180px;
+        transform: scale(0.7);
+        min-width: 50px;
+        min-height: 50px;
+        padding: 12px;
+    }
+
+    .speed-container {
+        bottom: 10px;
+        right: 10px;
+        transform: scale(0.7);
+    }
+
+    .speed-display {
+        font-size: 48px;
+        min-width: 100px;
+    }
+
+    .speed-unit {
+        font-size: 18px;
+    }
+
+    .rpm-box {
+        width: 10px;
+        height: 16px;
+    }
+
+    .gear-display {
+        font-size: 24px;
+    }
+
+    .fuel-display {
+        font-size: 14px;
+    }
+
+    .fuel-label {
+        font-size: 12px;
+    }
+
+    .health-display {
+        font-size: 14px;
+    }
+
+    .health-label {
+        font-size: 12px;
+    }
+}

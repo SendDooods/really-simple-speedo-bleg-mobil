@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blek Speedo</title>
+    <link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <!-- SVG Filters for color bleeding -->
+    <svg style="position: absolute; width: 0; height: 0; pointer-events: none;">
+        <defs>
+            <filter id="green-bleed">
+                <feColorMatrix type="matrix" values="0 0 0 0 0
+                                                     0 1 0 0 0.2
+                                                     0 0 0 0 0
+                                                     0 0 0 1 0"/>
+            </filter>
+            <filter id="blue-bleed-low">
+                <feColorMatrix type="matrix" values="0 0 0 0 0
+                                                     0 0.5 0 0 0.1
+                                                     0 0 1 0 0.8
+                                                     0 0 0 1 0"/>
+            </filter>
+            <filter id="blue-bleed-high">
+                <feColorMatrix type="matrix" values="0 0 0 0 0
+                                                     0 0.1 0 0 0
+                                                     0 0 0.6 0 0.4
+                                                     0 0 0 1 0"/>
+            </filter>
+            <filter id="red-bleed">
+                <feColorMatrix type="matrix" values="1 0 0 0 0.8
+                                                     0 0 0 0 0
+                                                     0 0 0 0 0
+                                                     0 0 0 1 0"/>
+            </filter>
+            <filter id="green-bleed-seatbelt">
+                <feColorMatrix type="matrix" values="0 0 0 0 0
+                                                     0 1 0 0 0.4
+                                                     0 0 0 0 0
+                                                     0 0 0 1 0"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Turn signals container - positioned above gear container -->
+    <div class="turn-signals-container" id="turn-signals-container">
+        <div class="turn-signal left-signal" id="left-signal">
+            <img src="texture/left.png" alt="Left Turn Signal" />
+        </div>
+        <div class="headlight-container" id="headlight-container">
+            <img src="texture/low-beam.png" alt="Low Beam" class="low-beam" id="low-beam" />
+            <img src="texture/high-beam.png" alt="High Beam" class="high-beam" id="high-beam" />
+        </div>
+        <div class="turn-signal right-signal" id="right-signal">
+            <img src="texture/right.png" alt="Right Turn Signal" />
+        </div>
+    </div>
+    
+    <!-- RPM boxes positioned independently -->
+    <div id="rpm-boxes" class="rpm-container"></div>
+    
+    <!-- Seatbelt indicator positioned above gear container -->
+    <div class="seatbelt-container" id="seatbelt-container">
+        <img src="texture/seatbelt.png" alt="Seatbelt" class="seatbelt-indicator" id="seatbelt-indicator" />
+    </div>
+    
+    <!-- Fuel display positioned independently -->
+    <div class="fuel-container">
+        <div class="fuel-display" id="fuel-display">100%</div>
+        <div class="fuel-label">F</div>
+    </div>
+    
+    <!-- Health display positioned independently -->
+    <div class="health-container">
+        <div class="health-display" id="health-display">100%</div>
+        <div class="health-label">H</div>
+    </div>
+    
+    <!-- Gear display positioned independently -->
+    <div class="gear-container">
+        <div class="gear-display" id="gear-display">N</div>
+    </div>
+    
+    <!-- Speed display positioned independently -->
+    <div class="speed-container">
+        <div class="speed-display" id="speed-display">0</div>
+        <div class="speed-unit" id="speed-unit">MPH</div>
+    </div>
+
+    <!-- Hidden elements for JavaScript compatibility -->
+    <div style="display: none;">
+        <div id="fuel-bar"></div>
+        <div id="fuel-percent"></div>
+        <div id="health-bar"></div>
+        <div id="health-percent"></div>
+        <div id="icon-left"></div>
+        <div id="icon-engine"></div>
+        <div id="icon-lights"></div>
+        <div id="icon-seatbelt"></div>
+        <div id="icon-right"></div>
+        <audio id="audio-tick"></audio>
+        <audio id="audio-alarm"></audio>
+    </div>
+
+    <script src="refrence.js"></script>
+</body>
+
+</html>
