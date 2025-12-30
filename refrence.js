@@ -203,12 +203,12 @@ document.addEventListener('DOMContentLoaded', () => {
             rpmBoxes.forEach((box, i) => {
                 box.classList.toggle('on', i < active);
                 // Add gear warning when RPM is high (100%+)
-                box.classList.toggle('gear-warning', rpm >= 0.9 && i < active);
+                box.classList.toggle('gear-warning', rpm >= 0.85 && i < active);
             });
 
             // Update gear display warning based on RPM
             if (els.gear) {
-                els.gear.classList.toggle('gear-warning', rpm >= 0.9);
+                els.gear.classList.toggle('gear-warning', rpm >= 0.85);
             }
         };
     } else {
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Engine off = white
             root.style.setProperty('--speed-color', '#ffffff');
             root.style.setProperty('--speed-glow', 'rgba(255, 255, 255, 0.8)');
-        } else if (val >= 1 && val <= 45) {
+        } else if (val >= 1 && val <= 50) {
             // 1-40 mph = green
             root.style.setProperty('--speed-color', '#00ff41');
             root.style.setProperty('--speed-glow', 'rgba(0, 255, 65, 0.8)');
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 40-50 mph = yellow
             root.style.setProperty('--speed-color', '#ffff00');
             root.style.setProperty('--speed-glow', 'rgba(255, 255, 0, 0.8)');
-        } else if (val > 60) {
+        } else if (val > 70) {
             // Above 50 mph = red
             root.style.setProperty('--speed-color', '#ff0000');
             root.style.setProperty('--speed-glow', 'rgba(255, 0, 0, 0.8)');
