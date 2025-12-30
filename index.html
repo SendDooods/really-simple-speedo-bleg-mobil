@@ -17,31 +17,31 @@
                 <feColorMatrix type="matrix" values="0 0 0 0 0
                                                      0 1 0 0 0.2
                                                      0 0 0 0 0
-                                                     0 0 0 1 0"/>
+                                                     0 0 0 1 0" />
             </filter>
             <filter id="blue-bleed-low">
                 <feColorMatrix type="matrix" values="0 0 0 0 0
                                                      0 0.5 0 0 0.1
                                                      0 0 1 0 0.8
-                                                     0 0 0 1 0"/>
+                                                     0 0 0 1 0" />
             </filter>
             <filter id="blue-bleed-high">
                 <feColorMatrix type="matrix" values="0 0 0 0 0
                                                      0 0.1 0 0 0
                                                      0 0 0.6 0 0.4
-                                                     0 0 0 1 0"/>
+                                                     0 0 0 1 0" />
             </filter>
             <filter id="red-bleed">
                 <feColorMatrix type="matrix" values="1 0 0 0 0.8
                                                      0 0 0 0 0
                                                      0 0 0 0 0
-                                                     0 0 0 1 0"/>
+                                                     0 0 0 1 0" />
             </filter>
             <filter id="green-bleed-seatbelt">
                 <feColorMatrix type="matrix" values="0 0 0 0 0
                                                      0 1 0 0 0.4
                                                      0 0 0 0 0
-                                                     0 0 0 1 0"/>
+                                                     0 0 0 1 0" />
             </filter>
         </defs>
     </svg>
@@ -59,32 +59,32 @@
             <img src="texture/right.png" alt="Right Turn Signal" />
         </div>
     </div>
-    
+
     <!-- RPM boxes positioned independently -->
     <div id="rpm-boxes" class="rpm-container"></div>
-    
+
     <!-- Seatbelt indicator positioned above gear container -->
     <div class="seatbelt-container" id="seatbelt-container">
         <img src="texture/seatbelt.png" alt="Seatbelt" class="seatbelt-indicator" id="seatbelt-indicator" />
     </div>
-    
+
     <!-- Fuel display positioned independently -->
     <div class="fuel-container">
         <div class="fuel-display" id="fuel-display">100%</div>
         <div class="fuel-label">F</div>
     </div>
-    
+
     <!-- Health display positioned independently -->
     <div class="health-container">
         <div class="health-display" id="health-display">100%</div>
         <div class="health-label">H</div>
     </div>
-    
+
     <!-- Gear display positioned independently -->
     <div class="gear-container">
         <div class="gear-display" id="gear-display">N</div>
     </div>
-    
+
     <!-- Speed display positioned independently -->
     <div class="speed-container">
         <div class="speed-display" id="speed-display">0</div>
@@ -104,6 +104,12 @@
         <div id="icon-right"></div>
         <audio id="audio-tick"></audio>
         <audio id="audio-alarm"></audio>
+        <audio id="seatbelt-warning1" src="sound/sbwarning.mp3" loop class="seatbelt-audio"></audio>
+        <audio id="seatbelt-warning2" src="sound/sbwarning2.mp3" loop class="seatbelt-audio"></audio>
+        <audio id="engine-warning1" src="sound/egwarn1.mp3" class="engine-audio"></audio>
+        <audio id="engine-warning2" src="sound/egwarn2.mp3" class="engine-audio"></audio>
+        <audio id="fuel-warning1" src="sound/f50p.mp3" class="fuel-audio"></audio>
+        <audio id="fuel-warning2" src="sound/f10p.mp3" class="fuel-audio"></audio>
     </div>
 
     <script src="refrence.js"></script>

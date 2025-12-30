@@ -26,7 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         audio: {
             tick: document.getElementById('audio-tick'),
-            alarm: document.getElementById('audio-alarm')
+            alarm: document.getElementById('audio-alarm'),
+            seatbeltWarning1: document.getElementById('seatbelt-warning1'),
+            seatbeltWarning2: document.getElementById('seatbelt-warning2'),
+            engineWarning1: document.getElementById('engine-warning1'),
+            engineWarning2: document.getElementById('engine-warning2'),
+            fuelWarning1: document.getElementById('fuel-warning1'),
+            fuelWarning2: document.getElementById('fuel-warning2')
         }
     };
 
@@ -35,12 +41,73 @@ document.addEventListener('DOMContentLoaded', () => {
         hasMoved: false,
         isMotorcycle: false,
         fuelLevel: 100, // Store last fuel level
-        healthLevel: 100 // Store last health level
+        healthLevel: 100, // Store last health level
+        engineWarning50Played: false, // Track if 50% health warning was played
+        engineWarning20Played: false, // Track if 20% health warning was played
+        fuelWarning50Played: false, // Track if 50% fuel warning was played
+        fuelWarning10Played: false  // Track if 10% fuel warning was played
     };
 
     const manageLoopingAudio = (audioEl, shouldPlay) => {
         // Audio disabled - function does nothing
         return;
+    };
+
+    const manageSeatbeltAudio = (shouldPlay) => {
+        if (els.audio.seatbeltWarning1 && els.audio.seatbeltWarning2) {
+            if (shouldPlay) {
+                // Get volume from CSS custom property
+                const volume = parseFloat(getComputedStyle(els.audio.seatbeltWarning1).getPropertyValue('--seatbelt-volume')) || 0.5;
+                els.audio.seatbeltWarning1.volume = volume;
+                els.audio.seatbeltWarning2.volume = volume;
+
+                // Play both warning sounds
+                els.audio.seatbeltWarning1.play().catch(() => { });
+                els.audio.seatbeltWarning2.play().catch(() => { });
+            } else {
+                // Stop both warning sounds
+                els.audio.seatbeltWarning1.pause();
+                els.audio.seatbeltWarning2.pause();
+                els.audio.seatbeltWarning1.currentTime = 0;
+                els.audio.seatbeltWarning2.currentTime = 0;
+            }
+        }
+    };
+
+    const audioQueue = [];
+    let isPlayingAudio = false;
+
+    const playNextAudio = () => {
+        if (audioQueue.length === 0 || isPlayingAudio) return;
+
+        isPlayingAudio = true;
+        const audioInfo = audioQueue.shift();
+        const audioElement = audioInfo.element;
+
+        if (audioElement) {
+            audioElement.volume = audioInfo.volume;
+            audioElement.currentTime = 0;
+
+            audioElement.onended = () => {
+                isPlayingAudio = false;
+                setTimeout(playNextAudio, 500); // 500ms delay between audio
+            };
+
+            audioElement.play().catch(() => {
+                isPlayingAudio = false;
+                setTimeout(playNextAudio, 500);
+            });
+        } else {
+            isPlayingAudio = false;
+            setTimeout(playNextAudio, 500);
+        }
+    };
+
+    const queueAudio = (element, volumeProperty) => {
+        if (!element) return;
+        const volume = parseFloat(getComputedStyle(element).getPropertyValue(volumeProperty)) || 0.3;
+        audioQueue.push({ element, volume });
+        playNextAudio();
     };
 
     const toggleIcon = (id, state) => {
@@ -239,20 +306,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     root.style.setProperty('--fuel-glow', 'rgba(0, 255, 0, 0.8)');
                     els.fuelDisplay.classList.remove('fuel-blink');
                 } else if (percentage >= 20) {
-                    // Yellow for 20-49%
+                    // Yellow for 20-49% - Play fuel-warning1 while in 50% to 20% range
                     root.style.setProperty('--fuel-color', '#ffff00');
                     root.style.setProperty('--fuel-glow', 'rgba(255, 255, 0, 0.8)');
                     els.fuelDisplay.classList.remove('fuel-blink');
-                } else if (percentage > 10) {
-                    // Red for 11-19%
-                    root.style.setProperty('--fuel-color', '#ff0000');
-                    root.style.setProperty('--fuel-glow', 'rgba(255, 0, 0, 0.8)');
-                    els.fuelDisplay.classList.remove('fuel-blink');
+
+                    // Play fuel-warning1 while fuel is between 50% and 20%
+                    if (vehicleState.engineOn && percentage < 50) {
+                        queueAudio(els.audio.fuelWarning1, '--fuel-volume');
+                    }
                 } else {
-                    // Blinking red for 10% and under
+                    // Red for under 20% - Play fuel-warning2 while in 20% to 0% range
                     root.style.setProperty('--fuel-color', '#ff0000');
                     root.style.setProperty('--fuel-glow', 'rgba(255, 0, 0, 0.8)');
-                    els.fuelDisplay.classList.add('fuel-blink');
+
+                    // Add blinking for very low fuel (under 10%)
+                    if (percentage < 10) {
+                        els.fuelDisplay.classList.add('fuel-blink');
+                    } else {
+                        els.fuelDisplay.classList.remove('fuel-blink');
+                    }
+
+                    // Play fuel-warning2 while fuel is between 20% and 0%
+                    if (vehicleState.engineOn && percentage < 20) {
+                        queueAudio(els.audio.fuelWarning2, '--fuel-volume');
+                    }
                 }
             }
         }
@@ -297,20 +375,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     root.style.setProperty('--health-glow', 'rgba(0, 255, 0, 0.8)');
                     els.healthDisplay.classList.remove('health-blink');
                 } else if (percentage >= 20) {
-                    // Yellow for 20-49%
+                    // Yellow for 20-49% - Play engine-warning1 while in 50% to 20% range
                     root.style.setProperty('--health-color', '#ffff00');
                     root.style.setProperty('--health-glow', 'rgba(255, 255, 0, 0.8)');
                     els.healthDisplay.classList.remove('health-blink');
-                } else if (percentage > 10) {
-                    // Red for 11-19%
-                    root.style.setProperty('--health-color', '#ff0000');
-                    root.style.setProperty('--health-glow', 'rgba(255, 0, 0, 0.8)');
-                    els.healthDisplay.classList.remove('health-blink');
+
+                    // Play engine-warning1 while health is between 50% and 20%
+                    if (vehicleState.engineOn && percentage < 50) {
+                        queueAudio(els.audio.engineWarning1, '--engine-volume');
+                    }
                 } else {
-                    // Blinking red for 10% and under
+                    // Red for under 20% - Play engine-warning2 while in 20% to 0% range
                     root.style.setProperty('--health-color', '#ff0000');
                     root.style.setProperty('--health-glow', 'rgba(255, 0, 0, 0.8)');
-                    els.healthDisplay.classList.add('health-blink');
+
+                    // Add blinking for very low health (under 10%)
+                    if (percentage < 10) {
+                        els.healthDisplay.classList.add('health-blink');
+                    } else {
+                        els.healthDisplay.classList.remove('health-blink');
+                    }
+
+                    // Play engine-warning2 while health is between 20% and 0%
+                    if (vehicleState.engineOn && percentage < 20) {
+                        queueAudio(els.audio.engineWarning2, '--engine-volume');
+                    }
                 }
             }
         }
@@ -348,6 +437,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const shouldPlayAlarm = !isWearingBelt && vehicleState.engineOn;
         manageLoopingAudio(els.audio.alarm, shouldPlayAlarm);
+
+        // Play seatbelt warning audio when unbuckled and engine on
+        const shouldPlaySeatbeltWarning = !isWearingBelt && vehicleState.engineOn && !vehicleState.isMotorcycle;
+        manageSeatbeltAudio(shouldPlaySeatbeltWarning);
     };
 
     window.setEngine = (on) => {
@@ -382,6 +475,13 @@ document.addEventListener('DOMContentLoaded', () => {
             vehicleState.hasMoved = false;
             window.setGear('N');
             manageLoopingAudio(els.audio.alarm, false);
+
+            // Reset all warning flags when engine turns off
+            vehicleState.engineWarning50Played = false;
+            vehicleState.engineWarning20Played = false;
+            vehicleState.fuelWarning50Played = false;
+            vehicleState.fuelWarning10Played = false;
+
             // Update fuel and health displays when engine turns off
             window.setFuel(vehicleState.fuelLevel / 100);
             window.setHealth(vehicleState.healthLevel / 100);

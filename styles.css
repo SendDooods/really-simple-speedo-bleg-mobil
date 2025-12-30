@@ -592,3 +592,28 @@ body {
         font-size: 12px;
     }
 }
+
+/*
+ Hide audio elements (used for sound effects) */
+audio {
+    display: none;
+    /* Audio elements are hidden but functional */
+}
+
+/* Seatbelt warning audio volume control */
+.seatbelt-audio {
+    /* Adjustable volume - edit this value (0.0 to 1.0) */
+    --seatbelt-volume: 0.1;
+}
+
+/* Engine warning audio volume control */
+.engine-audio {
+    /* Adjustable volume - edit this value (0.0 to 1.0) */
+    --engine-volume: 0.1;
+}
+
+/* Fuel warning audio volume control */
+.fuel-audio {
+    /* Adjustable volume - edit this value (0.0 to 1.0) */
+    --fuel-volume: 0.1;
+}
